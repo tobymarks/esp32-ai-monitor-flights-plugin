@@ -1,0 +1,164 @@
+{
+  "formatVersion": 3,
+  "id": "org.aimonitor.flights",
+  "name": "Flights",
+  "version": "1.0.0",
+  "author": "AI Monitor contributors",
+  "description": "Aircraft currently flying near the display's location, nearest first.",
+  "viewLabel": "Flights",
+  "attribution": "Flight data by adsb.lol contributors (ODbL 1.0)",
+  "minSceneProtocol": 1,
+  "source": {
+    "url": "https://api.adsb.lol/v2/point/{location.latitude}/{location.longitude}/{radius}",
+    "intervalSeconds": 20
+  },
+  "requires": ["location"],
+  "lists": [
+    {
+      "name": "flights",
+      "path": "ac",
+      "sortBy": "dst",
+      "limit": 3,
+      "where": [
+        {"path": "flight", "operator": "exists"},
+        {"path": "alt_baro", "operator": "notEquals", "value": "ground"},
+        {"path": "gs", "operator": "atLeast", "value": 40}
+      ]
+    }
+  ],
+  "attentionRules": [
+    {"id": "flight-in-range", "path": "lists.flights.count", "operator": "atLeast", "value": 1}
+  ],
+  "settings": [
+    {"key": "radius", "label": "Radius (nautical miles)", "kind": "number", "default": 15, "min": 1, "max": 40}
+  ],
+  "bindings": [
+    {"name": "count", "path": "lists.flights.count", "format": "integer", "suffix": "", "map": {}, "fallback": "0"},
+    {"name": "f1", "path": "lists.flights.items.0.flight", "format": "text", "suffix": "", "map": {}, "fallback": "", "trim": true},
+    {"name": "t1", "path": "lists.flights.items.0.t", "format": "text", "suffix": "", "map": {}, "fallback": "-", "trim": true},
+    {"name": "d1", "path": "lists.flights.items.0.dst", "format": "decimal1", "suffix": " km", "map": {}, "fallback": "", "scale": 1.852},
+    {"name": "f2", "path": "lists.flights.items.1.flight", "format": "text", "suffix": "", "map": {}, "fallback": "", "trim": true},
+    {"name": "t2", "path": "lists.flights.items.1.t", "format": "text", "suffix": "", "map": {}, "fallback": "-", "trim": true},
+    {"name": "d2", "path": "lists.flights.items.1.dst", "format": "decimal1", "suffix": " km", "map": {}, "fallback": "", "scale": 1.852},
+    {"name": "f3", "path": "lists.flights.items.2.flight", "format": "text", "suffix": "", "map": {}, "fallback": "", "trim": true},
+    {"name": "t3", "path": "lists.flights.items.2.t", "format": "text", "suffix": "", "map": {}, "fallback": "-", "trim": true},
+    {"name": "d3", "path": "lists.flights.items.2.dst", "format": "decimal1", "suffix": " km", "map": {}, "fallback": "", "scale": 1.852},
+    {"name": "r1", "path": "lists.flights.items.0.r", "format": "text", "suffix": "", "map": {}, "fallback": "", "trim": true},
+    {"name": "alt1", "path": "lists.flights.items.0.alt_baro", "format": "integer", "suffix": " m", "map": {}, "fallback": "", "scale": 0.3048},
+    {"name": "spd1", "path": "lists.flights.items.0.gs", "format": "integer", "suffix": " km/h", "map": {}, "fallback": "", "scale": 1.852},
+    {"name": "trk1", "path": "lists.flights.items.0.track", "format": "integer", "suffix": "", "map": {}, "fallback": "-"}
+  ],
+  "localizations": {
+    "de": {"Flights": "Fluege", "Aircraft currently flying near the display's location, nearest first.": "Flugzeuge in der Naehe des Display-Standorts, das naechste zuerst.", "Flight data by adsb.lol contributors (ODbL 1.0)": "Flugdaten von adsb.lol und Mitwirkenden (ODbL 1.0)", "Radius (nautical miles)": "Radius (Seemeilen)", "FLIGHTS IN RANGE": "FLUEGE IM UMKREIS", "{{d1}}  heading {{trk1}}": "{{d1}}  Kurs {{trk1}}", "No flight in range": "Kein Flug in Reichweite", "Data: adsb.lol": "Daten: adsb.lol"}
+  },
+  "scenes": {
+    "portrait": {
+      "background": 1580575,
+      "nodes": [
+        {"type": "text", "x": 50, "y": 30, "w": 740, "h": 60, "color": 11250603, "font": 14, "text": "FLIGHTS IN RANGE"},
+        {"type": "text", "x": 790, "y": 30, "w": 160, "h": 60, "color": 11250603, "font": 14, "text": "{{count}}", "align": "right"},
+        {"type": "rect", "x": 50, "y": 100, "w": 900, "h": 4, "color": 3717119},
+        {"type": "text", "x": 50, "y": 130, "w": 900, "h": 140, "color": 7324671, "font": 36, "text": "{{f1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 50, "y": 275, "w": 900, "h": 75, "color": 16777215, "font": 16, "text": "{{t1}}  {{r1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 50, "y": 370, "w": 900, "h": 75, "color": 16777215, "font": 16, "text": "{{alt1}}  {{spd1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 50, "y": 450, "w": 900, "h": 75, "color": 11250603, "font": 16, "text": "{{d1}}  heading {{trk1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 50, "y": 300, "w": 900, "h": 160, "color": 11250603, "font": 16, "text": "No flight in range", "visibleWhen": {"binding": "count", "equals": "0"}},
+        {"type": "rect", "x": 50, "y": 565, "w": 900, "h": 4, "color": 3717119, "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 50, "y": 610, "w": 900, "h": 75, "color": 16777215, "font": 16, "text": "{{f2}}  {{t2}}  {{d2}}", "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 50, "y": 705, "w": 900, "h": 75, "color": 16777215, "font": 16, "text": "{{f3}}  {{t3}}  {{d3}}", "visibleWhen": {"binding": "f3", "notEquals": ""}},
+        {"type": "text", "x": 50, "y": 915, "w": 900, "h": 55, "color": 11250603, "font": 12, "text": "Data: adsb.lol"}
+      ]
+    },
+    "landscape": {
+      "background": 1580575,
+      "nodes": [
+        {"type": "text", "x": 40, "y": 35, "w": 740, "h": 80, "color": 11250603, "font": 14, "text": "FLIGHTS IN RANGE"},
+        {"type": "text", "x": 800, "y": 35, "w": 160, "h": 80, "color": 11250603, "font": 14, "text": "{{count}}", "align": "right"},
+        {"type": "rect", "x": 40, "y": 125, "w": 920, "h": 5, "color": 3717119},
+        {"type": "text", "x": 40, "y": 160, "w": 560, "h": 190, "color": 7324671, "font": 36, "text": "{{f1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 600, "y": 185, "w": 360, "h": 100, "color": 16777215, "font": 16, "text": "{{t1}}", "align": "right", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 600, "y": 280, "w": 360, "h": 90, "color": 11250603, "font": 14, "text": "{{r1}}", "align": "right", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 40, "y": 380, "w": 920, "h": 95, "color": 16777215, "font": 16, "text": "{{alt1}}  {{spd1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 40, "y": 480, "w": 920, "h": 95, "color": 11250603, "font": 16, "text": "{{d1}}  heading {{trk1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 40, "y": 300, "w": 920, "h": 200, "color": 11250603, "font": 16, "text": "No flight in range", "visibleWhen": {"binding": "count", "equals": "0"}},
+        {"type": "rect", "x": 40, "y": 610, "w": 920, "h": 5, "color": 3717119, "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 40, "y": 650, "w": 920, "h": 85, "color": 16777215, "font": 14, "text": "{{f2}}  {{t2}}  {{d2}}", "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 40, "y": 745, "w": 920, "h": 85, "color": 16777215, "font": 14, "text": "{{f3}}  {{t3}}  {{d3}}", "visibleWhen": {"binding": "f3", "notEquals": ""}},
+        {"type": "text", "x": 40, "y": 900, "w": 920, "h": 75, "color": 11250603, "font": 12, "text": "Data: adsb.lol"}
+      ]
+    },
+    "square": {
+      "background": 1580575,
+      "nodes": [
+        {"type": "text", "x": 60, "y": 45, "w": 700, "h": 70, "color": 11250603, "font": 20, "text": "FLIGHTS IN RANGE"},
+        {"type": "text", "x": 780, "y": 45, "w": 160, "h": 70, "color": 11250603, "font": 20, "text": "{{count}}", "align": "right"},
+        {"type": "rect", "x": 60, "y": 130, "w": 880, "h": 3, "color": 3717119},
+        {"type": "text", "x": 60, "y": 170, "w": 620, "h": 130, "color": 7324671, "font": 48, "text": "{{f1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 640, "y": 180, "w": 300, "h": 70, "color": 16777215, "font": 24, "text": "{{t1}}", "align": "right", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 640, "y": 250, "w": 300, "h": 60, "color": 11250603, "font": 20, "text": "{{r1}}", "align": "right", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 60, "y": 330, "w": 880, "h": 70, "color": 16777215, "font": 24, "text": "{{alt1}}  {{spd1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 60, "y": 410, "w": 880, "h": 70, "color": 11250603, "font": 24, "text": "{{d1}}  heading {{trk1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 60, "y": 280, "w": 880, "h": 150, "color": 11250603, "font": 24, "text": "No flight in range", "visibleWhen": {"binding": "count", "equals": "0"}},
+        {"type": "rect", "x": 60, "y": 530, "w": 880, "h": 3, "color": 3717119, "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 60, "y": 570, "w": 880, "h": 70, "color": 16777215, "font": 24, "text": "{{f2}}  {{t2}}  {{d2}}", "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 60, "y": 660, "w": 880, "h": 70, "color": 16777215, "font": 24, "text": "{{f3}}  {{t3}}  {{d3}}", "visibleWhen": {"binding": "f3", "notEquals": ""}},
+        {"type": "text", "x": 60, "y": 900, "w": 880, "h": 60, "color": 11250603, "font": 16, "text": "Data: adsb.lol"}
+      ]
+    }
+  },
+  "lightScenes": {
+    "portrait": {
+      "background": 16119802,
+      "nodes": [
+        {"type": "text", "x": 50, "y": 30, "w": 740, "h": 60, "color": 4544106, "font": 14, "text": "FLIGHTS IN RANGE"},
+        {"type": "text", "x": 790, "y": 30, "w": 160, "h": 60, "color": 4544106, "font": 14, "text": "{{count}}", "align": "right"},
+        {"type": "rect", "x": 50, "y": 100, "w": 900, "h": 4, "color": 13950439},
+        {"type": "text", "x": 50, "y": 130, "w": 900, "h": 140, "color": 1398960, "font": 36, "text": "{{f1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 50, "y": 275, "w": 900, "h": 75, "color": 1515823, "font": 16, "text": "{{t1}}  {{r1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 50, "y": 370, "w": 900, "h": 75, "color": 1515823, "font": 16, "text": "{{alt1}}  {{spd1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 50, "y": 450, "w": 900, "h": 75, "color": 4544106, "font": 16, "text": "{{d1}}  heading {{trk1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 50, "y": 300, "w": 900, "h": 160, "color": 4544106, "font": 16, "text": "No flight in range", "visibleWhen": {"binding": "count", "equals": "0"}},
+        {"type": "rect", "x": 50, "y": 565, "w": 900, "h": 4, "color": 13950439, "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 50, "y": 610, "w": 900, "h": 75, "color": 1515823, "font": 16, "text": "{{f2}}  {{t2}}  {{d2}}", "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 50, "y": 705, "w": 900, "h": 75, "color": 1515823, "font": 16, "text": "{{f3}}  {{t3}}  {{d3}}", "visibleWhen": {"binding": "f3", "notEquals": ""}},
+        {"type": "text", "x": 50, "y": 915, "w": 900, "h": 55, "color": 4544106, "font": 12, "text": "Data: adsb.lol"}
+      ]
+    },
+    "landscape": {
+      "background": 16119802,
+      "nodes": [
+        {"type": "text", "x": 40, "y": 35, "w": 740, "h": 80, "color": 4544106, "font": 14, "text": "FLIGHTS IN RANGE"},
+        {"type": "text", "x": 800, "y": 35, "w": 160, "h": 80, "color": 4544106, "font": 14, "text": "{{count}}", "align": "right"},
+        {"type": "rect", "x": 40, "y": 125, "w": 920, "h": 5, "color": 13950439},
+        {"type": "text", "x": 40, "y": 160, "w": 560, "h": 190, "color": 1398960, "font": 36, "text": "{{f1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 600, "y": 185, "w": 360, "h": 100, "color": 1515823, "font": 16, "text": "{{t1}}", "align": "right", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 600, "y": 280, "w": 360, "h": 90, "color": 4544106, "font": 14, "text": "{{r1}}", "align": "right", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 40, "y": 380, "w": 920, "h": 95, "color": 1515823, "font": 16, "text": "{{alt1}}  {{spd1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 40, "y": 480, "w": 920, "h": 95, "color": 4544106, "font": 16, "text": "{{d1}}  heading {{trk1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 40, "y": 300, "w": 920, "h": 200, "color": 4544106, "font": 16, "text": "No flight in range", "visibleWhen": {"binding": "count", "equals": "0"}},
+        {"type": "rect", "x": 40, "y": 610, "w": 920, "h": 5, "color": 13950439, "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 40, "y": 650, "w": 920, "h": 85, "color": 1515823, "font": 14, "text": "{{f2}}  {{t2}}  {{d2}}", "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 40, "y": 745, "w": 920, "h": 85, "color": 1515823, "font": 14, "text": "{{f3}}  {{t3}}  {{d3}}", "visibleWhen": {"binding": "f3", "notEquals": ""}},
+        {"type": "text", "x": 40, "y": 900, "w": 920, "h": 75, "color": 4544106, "font": 12, "text": "Data: adsb.lol"}
+      ]
+    },
+    "square": {
+      "background": 16119802,
+      "nodes": [
+        {"type": "text", "x": 60, "y": 45, "w": 700, "h": 70, "color": 4544106, "font": 20, "text": "FLIGHTS IN RANGE"},
+        {"type": "text", "x": 780, "y": 45, "w": 160, "h": 70, "color": 4544106, "font": 20, "text": "{{count}}", "align": "right"},
+        {"type": "rect", "x": 60, "y": 130, "w": 880, "h": 3, "color": 13950439},
+        {"type": "text", "x": 60, "y": 170, "w": 620, "h": 130, "color": 1398960, "font": 48, "text": "{{f1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 640, "y": 180, "w": 300, "h": 70, "color": 1515823, "font": 24, "text": "{{t1}}", "align": "right", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 640, "y": 250, "w": 300, "h": 60, "color": 4544106, "font": 20, "text": "{{r1}}", "align": "right", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 60, "y": 330, "w": 880, "h": 70, "color": 1515823, "font": 24, "text": "{{alt1}}  {{spd1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 60, "y": 410, "w": 880, "h": 70, "color": 4544106, "font": 24, "text": "{{d1}}  heading {{trk1}}", "visibleWhen": {"binding": "count", "notEquals": "0"}},
+        {"type": "text", "x": 60, "y": 280, "w": 880, "h": 150, "color": 4544106, "font": 24, "text": "No flight in range", "visibleWhen": {"binding": "count", "equals": "0"}},
+        {"type": "rect", "x": 60, "y": 530, "w": 880, "h": 3, "color": 13950439, "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 60, "y": 570, "w": 880, "h": 70, "color": 1515823, "font": 24, "text": "{{f2}}  {{t2}}  {{d2}}", "visibleWhen": {"binding": "f2", "notEquals": ""}},
+        {"type": "text", "x": 60, "y": 660, "w": 880, "h": 70, "color": 1515823, "font": 24, "text": "{{f3}}  {{t3}}  {{d3}}", "visibleWhen": {"binding": "f3", "notEquals": ""}},
+        {"type": "text", "x": 60, "y": 900, "w": 880, "h": 60, "color": 4544106, "font": 16, "text": "Data: adsb.lol"}
+      ]
+    }
+  }
+}
