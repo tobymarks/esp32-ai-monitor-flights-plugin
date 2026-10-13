@@ -121,12 +121,12 @@ manifest = {
     ],
     "bindings": bindings,
     "localizations": {"de": {
-        "Flights": "Fluege",
+        "Flights": "Flüge",
         "Aircraft currently flying near the display's location, nearest first.":
-            "Flugzeuge in der Naehe des Display-Standorts, das naechste zuerst.",
+            "Flugzeuge in der Nähe des Display-Standorts, das nächste zuerst.",
         "Flight data by adsb.lol contributors (ODbL 1.0)": "Flugdaten von adsb.lol und Mitwirkenden (ODbL 1.0)",
         "Radius (nautical miles)": "Radius (Seemeilen)",
-        "FLIGHTS IN RANGE": "FLUEGE IM UMKREIS",
+        "FLIGHTS IN RANGE": "FLÜGE IM UMKREIS",
         "{{d1}}  heading {{trk1}}": "{{d1}}  Kurs {{trk1}}",
         "No flight in range": "Kein Flug in Reichweite",
         "Data: adsb.lol": "Daten: adsb.lol",
@@ -139,13 +139,13 @@ def dump(value, indent=0):
     """Keep nodes, bindings and filters on one line each for readable diffs."""
     pad = "  " * indent
     if isinstance(value, dict) and (indent >= 2 and all(not isinstance(v, (dict, list)) or k in ("visibleWhen", "map") for k, v in value.items())):
-        return json.dumps(value, ensure_ascii=True)
+        return json.dumps(value, ensure_ascii=False)
     if isinstance(value, dict):
         rows = [f'{pad}  {json.dumps(k)}: {dump(v, indent + 1)}' for k, v in value.items()]
         return "{\n" + ",\n".join(rows) + f"\n{pad}}}"
     if isinstance(value, list) and value and all(isinstance(v, (dict, list)) for v in value):
         return "[\n" + ",\n".join(f"{pad}  {dump(v, indent + 1)}" for v in value) + f"\n{pad}]"
-    return json.dumps(value, ensure_ascii=True)
+    return json.dumps(value, ensure_ascii=False)
 
 from pathlib import Path
-Path(__file__).resolve().parents[1].joinpath("plugin.json").write_text(dump(manifest) + "\n")
+Path(__file__).resolve().parents[1].joinpath("plugin.json").write_text(dump(manifest) + "\n", encoding="utf-8")

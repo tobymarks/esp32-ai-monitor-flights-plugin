@@ -35,9 +35,9 @@ first; the number in the header counts all of them. With Intelligent switching
 the display changes to Flights when the sky was empty and a flight comes into
 range. Near an airport, where something is always in range, that never fires.
 
-German and English text and dark and light layouts are included. German text
-uses ASCII spellings such as `FLUEGE` because scene protocol version 1 does not
-support umlauts.
+German and English text and dark and light layouts are included. Firmware
+with scene protocol 2 shows German umlauts; for older firmware the companion
+writes `FLUEGE` instead of `FLÜGE`.
 
 ## Data source and trust
 
